@@ -2,7 +2,7 @@ package files
 
 import (
 	dropbox "github.com/tj/go-dropbox"
-	config "github.com/tomekwlod/dropboxCleaner/config"
+	config "github.com/tomekwlod/dropbox/config"
 )
 
 const perpage = 1000

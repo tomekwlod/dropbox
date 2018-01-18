@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/tomekwlod/dropboxCleaner/files"
+	"github.com/tomekwlod/dropbox/files"
 )
 
 func main() {

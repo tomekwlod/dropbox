@@ -7,7 +7,7 @@ import (
 	"sort"
 
 	dropbox "github.com/tj/go-dropbox"
-	"github.com/tomekwlod/dropboxCleaner/files"
+	"github.com/tomekwlod/dropbox/files"
 )
 
 const SHOWRESULTS = 20
