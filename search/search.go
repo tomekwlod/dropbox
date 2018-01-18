@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"sort"
 
-	env "github.com/segmentio/go-env"
 	dropbox "github.com/tj/go-dropbox"
+	"github.com/tomekwlod/dropboxCleaner/files"
 )
 
-const PERPAGE = 1000
 const SHOWRESULTS = 20
 
 type sortBySize []*dropbox.SearchMatch
@@ -27,46 +27,26 @@ func (a sortByTime) Less(i, j int) bool {
 }
 
 func main() {
-	c := client()
+	term := "_201*_"
 
-	var files []*dropbox.SearchMatch
-	var i, start uint64 = 0, 0
-
-	for {
-		start = i * PERPAGE
-
-		out, err := c.Files.Search(&dropbox.SearchInput{
-			Path:       "/",
-			Query:      "_201*_",
-			MaxResults: PERPAGE,
-			Start:      start,
-		})
-
-		if err != nil {
-			panic(err)
-		}
-
-		log.Printf("Page: %d / Results: %d", i+1, len(out.Matches))
-
-		for _, file := range out.Matches {
-			files = append(files, file)
-		}
-
-		if !out.More {
-			break
-		}
-
-		i++
+	if len(os.Args) > 1 {
+		term = os.Args[1]
 	}
 
+	log.Printf("Using term: `%s`\n", term)
+
+	files := files.Search(term)
+
 	if len(files) == 0 {
+		log.Printf("No files found for a term: `%s`\n", term)
+
 		return
 	}
 
 	fmt.Println("\nSorted by size DESC")
 	sort.Sort(sortBySize(files))
 
-	i = 0
+	i := 0
 	for _, file := range files {
 		i++
 
@@ -75,7 +55,8 @@ func main() {
 		if i > SHOWRESULTS-1 {
 			break
 		}
-		fmt.Printf("File: %s = %f MB\n", file.Metadata.PathDisplay, size)
+
+		fmt.Printf("File (created at: %s): %s = %f MB \n", file.Metadata.ClientModified.Format("2006-01-02"), file.Metadata.PathDisplay, size)
 	}
 
 	fmt.Println("\nSorted by date DESC")
@@ -93,14 +74,4 @@ func main() {
 
 		fmt.Printf("File (created at: %s): %s = %f MB \n", file.Metadata.ClientModified.Format("2006-01-02"), file.Metadata.PathDisplay, size)
 	}
-}
-
-func client() *dropbox.Client {
-	token, err := env.Get("DROPBOX_ACCESS_TOKEN")
-
-	if err != nil {
-		panic("No token provided. Run `export DROPBOX_ACCESS_TOKEN=arUfR.......Cc`")
-	}
-
-	return dropbox.New(dropbox.NewConfig(token))
 }
