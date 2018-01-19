@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/tomekwlod/dropbox/files"
+	"github.com/tomekwlod/dropbox"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	}
 
 	for _, fn := range fileNames {
-		ok := files.Delete(fn)
+		ok := dropbox.Delete(fn)
 
 		if ok == true {
 			log.Printf("%v - Delete acknowledged", fn)

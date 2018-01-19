@@ -6,19 +6,19 @@ import (
 	"os"
 	"sort"
 
-	dropbox "github.com/tj/go-dropbox"
-	"github.com/tomekwlod/dropbox/files"
+	godropbox "github.com/tj/go-dropbox"
+	"github.com/tomekwlod/dropbox"
 )
 
 const SHOWRESULTS = 20
 
-type sortBySize []*dropbox.SearchMatch
+type sortBySize []*godropbox.SearchMatch
 
 func (a sortBySize) Len() int           { return len(a) }
 func (a sortBySize) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a sortBySize) Less(i, j int) bool { return a[i].Metadata.Size > a[j].Metadata.Size }
 
-type sortByTime []*dropbox.SearchMatch
+type sortByTime []*godropbox.SearchMatch
 
 func (a sortByTime) Len() int      { return len(a) }
 func (a sortByTime) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
@@ -35,7 +35,7 @@ func main() {
 
 	log.Printf("Using term: `%s`\n", term)
 
-	files := files.Search(term)
+	files := dropbox.Search(term)
 
 	if len(files) == 0 {
 		log.Printf("No files found for a term: `%s`\n", term)

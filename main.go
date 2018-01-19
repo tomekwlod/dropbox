@@ -1,4 +1,4 @@
-package files
+package dropbox
 
 import (
 	dropbox "github.com/tj/go-dropbox"
