@@ -9,7 +9,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	dropbox "github.com/tj/go-dropbox"
 	config "github.com/tomekwlod/dropbox/config"
@@ -37,6 +36,7 @@ type UploadResult struct {
 }
 type UploadInput struct {
 	Path           string `json:"path"`
+	LocalFile      string `json:"-"`
 	Mode           string `json:"mode"`
 	AutoRename     bool   `json:"autorename"`
 	Mute           bool   `json:"mute"`
@@ -127,7 +127,7 @@ func Storage() *StorageResult {
 
 // needs to also return an error (not only here but in all of the functions)
 func Upload(in *UploadInput) (result *UploadResult) {
-	f, err := os.Open(filepath.Base(in.Path))
+	f, err := os.Open(in.LocalFile)
 	if err != nil {
 		panic(err)
 	}
@@ -204,7 +204,7 @@ func Upload(in *UploadInput) (result *UploadResult) {
 }
 
 func UploadSmall(in *UploadInput) (result *UploadResult) {
-	f, err := os.Open(filepath.Base(in.Path))
+	f, err := os.Open(in.LocalFile)
 	if err != nil {
 		panic(err)
 	}

@@ -19,6 +19,7 @@ func main() {
 	for _, fn := range os.Args[2:] {
 		in := &dropbox.UploadInput{
 			Path:       os.Args[1] + "/" + filepath.Base(fn),
+			LocalFile:  fn,
 			Mode:       "add",
 			Mute:       true,
 			AutoRename: true,
