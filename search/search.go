@@ -33,7 +33,7 @@ func main() {
 		term = os.Args[1]
 	}
 
-	log.Printf("Using term: `%s`\n", term)
+	log.Printf("Searching using term: `%s`\n", term)
 
 	files := dropbox.Search(term)
 
@@ -42,6 +42,8 @@ func main() {
 
 		return
 	}
+
+	log.Printf("%d files found\n", len(files))
 
 	fmt.Println("\nSorted by size DESC")
 	sort.Sort(sortBySize(files))

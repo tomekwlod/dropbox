@@ -9,6 +9,8 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 
 	dropbox "github.com/tj/go-dropbox"
 	config "github.com/tomekwlod/dropbox/config"
@@ -123,6 +125,34 @@ func Storage() *StorageResult {
 	}
 
 	return result
+}
+
+func Download(filename, target string) (err error) {
+	c := config.DropboxClient()
+
+	body, err := c.Files.Download(&dropbox.DownloadInput{
+		Path: filename,
+	})
+	if err != nil {
+		return err
+	}
+
+	// mkdir -p location/to/create
+	os.MkdirAll(strings.Replace(target, filepath.Base(target), "", -1), os.ModePerm)
+
+	// save body to file
+	outFile, err := os.Create(target)
+	if err != nil {
+		return err
+	}
+	defer outFile.Close()
+
+	_, err = io.Copy(outFile, body.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	return err
 }
 
 // needs to also return an error (not only here but in all of the functions)
