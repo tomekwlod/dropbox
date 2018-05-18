@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	dropbox "github.com/tj/go-dropbox"
 	config "github.com/tomekwlod/dropbox/config"
@@ -21,6 +22,11 @@ const uploadSizeLimit = 140
 
 var uploadSessionToken string
 
+type FilesResult struct {
+	Size     uint64    `json:"size"`
+	Name     string    `json:"name"`
+	Modified time.Time `json:"modified"`
+}
 type StorageResult struct {
 	Used                uint64  `json:"used"`
 	AllocationUsed      uint64  `json:"allocation_used"`
@@ -89,6 +95,53 @@ func Search(term string) []*dropbox.SearchMatch {
 		}
 
 		i++
+	}
+
+	return files
+}
+
+func AllFiles() []*FilesResult {
+	c := config.DropboxClient()
+
+	var files []*FilesResult
+
+	in := dropbox.ListFolderInput{Path: "", Recursive: true}
+	list, err := c.Files.ListFolder(&in)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, v := range list.Entries {
+		if v.Size > 0 {
+			files = append(files, &FilesResult{Size: v.Size, Name: v.PathDisplay, Modified: v.ClientModified})
+		}
+	}
+
+	if !list.HasMore {
+		return files
+	}
+
+	cursor := list.Cursor
+	for {
+		inc := dropbox.ListFolderContinueInput{Cursor: cursor}
+		list, err := c.Files.ListFolderContinue(&inc)
+
+		if err != nil {
+			panic(err)
+		}
+
+		if !list.HasMore {
+			break
+		}
+
+		for _, v := range list.Entries {
+			if v.Size > 0 {
+				files = append(files, &FilesResult{Size: v.Size, Name: v.PathDisplay, Modified: v.ClientModified})
+			}
+		}
+
+		cursor = list.Cursor
 	}
 
 	return files

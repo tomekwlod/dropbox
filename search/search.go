@@ -48,32 +48,32 @@ func main() {
 	fmt.Println("\nSorted by size DESC")
 	sort.Sort(sortBySize(files))
 
-	i := 0
+	i := 1
 	for _, file := range files {
-		i++
-
 		size := float64(file.Metadata.Size) / 1024 / 1024
 
-		if i > SHOWRESULTS-1 {
+		fmt.Printf("File (created at: %s): %s = %f MB \n", file.Metadata.ClientModified.Format("2006-01-02"), file.Metadata.PathDisplay, size)
+
+		if i >= SHOWRESULTS {
 			break
 		}
 
-		fmt.Printf("File (created at: %s): %s = %f MB \n", file.Metadata.ClientModified.Format("2006-01-02"), file.Metadata.PathDisplay, size)
+		i++
 	}
 
 	fmt.Println("\nSorted by date DESC")
 	sort.Sort(sortByTime(files))
 
-	i = 0
+	i = 1
 	for _, file := range files {
-		i++
-
 		size := float64(file.Metadata.Size) / 1024 / 1024
 
-		if i > SHOWRESULTS-1 {
+		fmt.Printf("File (created at: %s): %s = %f MB \n", file.Metadata.ClientModified.Format("2006-01-02"), file.Metadata.PathDisplay, size)
+
+		if i >= SHOWRESULTS {
 			break
 		}
 
-		fmt.Printf("File (created at: %s): %s = %f MB \n", file.Metadata.ClientModified.Format("2006-01-02"), file.Metadata.PathDisplay, size)
+		i++
 	}
 }
